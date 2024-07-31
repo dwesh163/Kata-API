@@ -1,17 +1,27 @@
-version: "3"
 services:
+    db:
+        image: mariadb
+        environment:
+            MARIADB_ROOT_PASSWORD: Super
+            MARIADB_DATABASE: kata-api
+        volumes:
+            - ./initSQL:/docker-entrypoint-initdb.d
+        ports:
+            - 3306:3306
 
-  db:
-    image: mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: Super
-      MYSQL_DATABASE: kata-api
-    volumes:
-      - ./initSQL:/docker-entrypoint-initdb.d
-    ports:
-      - 3306:3306
+    adminer:
+        image: adminer
+        ports:
+            - 8888:8080
 
-  adminer:
-    image: adminer
-    ports:
-      - 8888:8080
+    api:
+        build: ./api
+        volumes:
+            - ./api:/app
+        ports:
+            - 8000:8000
+        environment:
+            MARIADB_ROOT_PASSWORD: Super
+            MARIADB_DATABASE: kata-api
+            MARIADB_HOST: db
+            MARIADB_PORT: 3306
